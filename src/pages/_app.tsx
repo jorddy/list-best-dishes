@@ -24,7 +24,7 @@ export default withTRPC<AppRouter>({
      * @link https://trpc.io/docs/ssr
      */
     const url = process.env.URL
-      ? `https://${process.env.URL}/api/trpc`
+      ? `${process.env.URL}/api/trpc`
       : "http://localhost:3000/api/trpc";
 
     return { url };
