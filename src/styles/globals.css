@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply min-h-screen font-sans bg-slate-700 text-white;
+}
+
+h1 {
+  @apply text-4xl font-bold;
+}
