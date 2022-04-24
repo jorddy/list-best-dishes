@@ -12,7 +12,7 @@ export default function Home() {
     getNextPageParam: lastPage => lastPage.nextCursor
   });
 
-  const { mutate: createDish } = trpc.useMutation(["dish:create"], {
+  const createDish = trpc.useMutation(["dish:create"], {
     onSuccess: () => {
       client.invalidateQueries("dish:list");
       dishList.current?.lastElementChild?.scrollIntoView({
@@ -21,7 +21,7 @@ export default function Home() {
     }
   });
 
-  const { mutate: removeDish } = trpc.useMutation(["dish:remove"], {
+  const removeDish = trpc.useMutation(["dish:remove"], {
     onSuccess: () => {
       client.invalidateQueries("dish:list");
     }
@@ -32,7 +32,7 @@ export default function Home() {
     const form = ev.target as HTMLFormElement;
     const formData = new FormData(form);
 
-    createDish({ title: String(formData.get("title")) });
+    createDish.mutate({ title: String(formData.get("title")) });
     form.reset();
   };
 
@@ -90,9 +90,9 @@ export default function Home() {
         <button
           className='bg-slate-900 px-4 py-2 disabled:opacity-40'
           type='submit'
-          disabled={dishes.isFetching}
+          disabled={createDish.isLoading}
         >
-          {dishes.isLoading ? "Creating..." : "Create item"}
+          {createDish.isLoading ? "Creating..." : "Create item"}
         </button>
       </form>
 
@@ -112,8 +112,9 @@ export default function Home() {
                     {dish.id} - {dish.title}
                   </p>
                   <button
-                    className='bg-red-600 px-2 rounded-sm'
-                    onClick={() => removeDish({ id: dish.id })}
+                    className='bg-red-600 px-2 rounded-sm disabled:opacity-40'
+                    disabled={removeDish.isLoading}
+                    onClick={() => removeDish.mutate({ id: dish.id })}
                   >
                     X
                   </button>
@@ -128,10 +129,10 @@ export default function Home() {
         disabled={!dishes.hasNextPage || dishes.isFetchingNextPage}
         onClick={() => dishes.fetchNextPage()}
       >
-        {dishes.hasNextPage
+        {dishes.isFetchingNextPage
+          ? "Loading more..."
+          : dishes.hasNextPage
           ? "Load more"
-          : dishes.isFetchingNextPage
-          ? "Loading..."
           : "No more dishes to load"}
       </button>
     </main>
